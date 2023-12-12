@@ -29,9 +29,20 @@ namespace more_collections {
 
             const Token add(const T& proto) {
                 Token slot = _get_or_create_slot();
+                //DEBUG_PRINT("Got slot number " << slot.slot_number);
                 pool[slot.slot_number].content = new T(proto);
 
                 return slot;
+            }
+
+            bool remove(const Token& token) {
+                if (!is_valid_token(token)) {
+                    return false;
+                }
+                AllocationNode& node = pool[token.slot_number];
+                delete node.content;
+                node.content = nullptr;
+                return true;
             }
 
             bool is_valid_token(Token t) const {
@@ -45,7 +56,8 @@ namespace more_collections {
 
             Token _get_or_create_slot() {
                 for (unsigned int i = 0; i < pool.size(); i++) {
-                    if (pool[i].content != nullptr) {
+                    if (pool[i].content == nullptr) {
+                        //DEBUG_PRINT("Slot number " << i << "is available.");
                         AllocationNumber alloc_number = _get_next_alloc_number();
                         pool[i].alloc_number = alloc_number;
                         return Token {
@@ -55,6 +67,7 @@ namespace more_collections {
                     }
                 }
 
+                //DEBUG_PRINT("No slots available, creating new");
                 AllocationNode next_alloc = {
                     .alloc_number = _get_next_alloc_number(),
                     .content = nullptr,
