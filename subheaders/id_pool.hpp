@@ -10,20 +10,24 @@ namespace more_collections {
             typedef long unsigned int SlotNumber;
 
             struct AllocationNode {
-                AllocationNumber alloc_number;
-                T* content;
+                AllocationNumber alloc_number = 0;
+                T* content = nullptr;
             };
 
             struct Token {
                 AllocationNumber alloc_number;
                 SlotNumber slot_number;
+                std::string to_string() {
+                    std::string str = "Token with slot number " + std::to_string(slot_number) + " and alloc number " + std::to_string(alloc_number);
+                    return str;
+                }
             };
 
-            const T* get(const Token& t) const {
+            const T& get(const Token& t) const {
                 return _resolve_token(t);
             }
 
-            T* get_mut(const Token& t) {
+            T& get_mut(const Token& t) {
                 return _resolve_token(t);
             }
 
@@ -49,7 +53,9 @@ namespace more_collections {
                 if (t.alloc_number > pool.size()) {
                     return false;
                 }
-                return pool[t.slot_number].alloc_number == t.alloc_number;
+
+                const AllocationNode& node = pool[t.slot_number];
+                return (node.alloc_number == t.alloc_number) && (node.content != nullptr);
             }
 
         private:
@@ -80,16 +86,16 @@ namespace more_collections {
                 };
             }
 
-            T* _resolve_token(Token t) const {
+            T& _resolve_token(Token t) const {
                 if (!is_valid_token(t)) {
-                    return nullptr;
+                    //DEBUG_PRINT("Invalid token.");
+                    throw std::out_of_range(t.to_string());
                 }
 
-                return pool[t.slot_number].content;
-
+                return *pool[t.slot_number].content;
             }
 
-            AllocationNumber next_alloc_number = 0;
+            AllocationNumber next_alloc_number = 1;
             AllocationNumber _get_next_alloc_number() {
                 const AllocationNumber r = next_alloc_number;
                 next_alloc_number++;

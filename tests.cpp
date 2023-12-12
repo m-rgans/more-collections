@@ -25,7 +25,7 @@ TEST(IdPool, add_and_retrieve) {
     IdPool<int> pool;
     int test_value = 32;
     auto token = pool.add(test_value);
-    ASSERT_EQ(*pool.get(token), test_value);
+    ASSERT_EQ(pool.get(token), test_value);
 }
 
 TEST(IdPool, add_remove_retrieve) {
@@ -33,7 +33,7 @@ TEST(IdPool, add_remove_retrieve) {
     int test_value = 32;
     auto token = pool.add(test_value);
     ASSERT_TRUE(pool.remove(token));
-    ASSERT_FALSE(pool.get(token));
+    ASSERT_THROW(pool.get(token), std::out_of_range);
 }
 
 TEST(IdPool, add_remove_many) {
@@ -51,7 +51,7 @@ TEST(IdPool, add_remove_many) {
     for (unsigned i = 0; i < testv_length; i++) {
         tokens[i] = pool.add(test_values[i]);
         ASSERT_TRUE(pool.is_valid_token(tokens[i]));
-        ASSERT_EQ(*pool.get(tokens[i]), test_values[i]);
+        ASSERT_EQ(pool.get(tokens[i]), test_values[i]);
     }
 
     const int VALUE_REMOVED = -1; // rand doesnt return negative values
@@ -66,13 +66,21 @@ TEST(IdPool, add_remove_many) {
     DEBUG_PRINT("Re checking test pool.\n");
     for (unsigned i = 0; i < testv_length; i++) {
         if (test_values[i] == VALUE_REMOVED) {
-            ASSERT_FALSE(pool.get(tokens[i]));
+            ASSERT_THROW(pool.get(tokens[i]), std::out_of_range);
         }
         else {
-            ASSERT_EQ(*pool.get(tokens[i]), test_values[i]);
+            ASSERT_EQ(pool.get(tokens[i]), test_values[i]);
         }
     }
 
+}
+
+using more_collections::Glossary;
+TEST(glossary, add_and_retrieve) {
+    Glossary<std::string, int> glossary;
+    auto token = glossary.insert("one", 1);
+    ASSERT_EQ(glossary.get(token), 1);
+    ASSERT_EQ(glossary.get("one"), 1);
 }
 
 using more_collections::Glossary;
