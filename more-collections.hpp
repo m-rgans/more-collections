@@ -12,4 +12,5 @@
 #include "subheaders/glossary.hpp"
 #include "subheaders/id_pool.hpp"
     
-// namespace more_collections
+// todo: option to just add to std instead
+// of having our own namespace
