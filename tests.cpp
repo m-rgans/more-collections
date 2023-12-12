@@ -18,7 +18,7 @@
 
 #define UNIT_TESTS 1
 
-#include "more-collections.hpp"
+#include "more_collections.hpp"
 using more_collections::IdPool;
 
 TEST(IdPool, add_and_retrieve) {

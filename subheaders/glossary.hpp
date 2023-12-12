@@ -40,6 +40,19 @@ namespace more_collections {
                 }
             }
 
+            const K& get_key(const Token& t) {
+                // really bad
+                for (const auto& pair : _resolver) {
+                    if (pair.second == t) {
+                        return pair.first;
+                    }
+                }
+
+                // todo: fix this warning
+                // also todo: better exceptions
+                throw std::out_of_range("");
+            }
+
             const V& get(const Token& t ) const {
                 return _pool.get(t);
             }
@@ -56,6 +69,10 @@ namespace more_collections {
             V& get_mut(const K& key) {
                 Token t = get_token(key);
                 return get_mut(t);
+            }
+
+            bool remove(const Token& t) {
+
             }
 
         private:
